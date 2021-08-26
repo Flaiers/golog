@@ -27,11 +27,6 @@ var rdb = redis.NewClient(&redis.Options{
 	DB:       0,
 })
 
-type JSONResponse struct {
-	Error bool   `json:"error"`
-	Data  string `json:"data"`
-}
-
 func ResponseWriter(w http.ResponseWriter, error bool, data string) {
 	if error {
 		w.WriteHeader(http.StatusBadRequest)
@@ -44,15 +39,22 @@ func ResponseWriter(w http.ResponseWriter, error bool, data string) {
 	w.Write(response)
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func Analyzer(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
-	ResponseWriter(w, false, "OK")
+	body := json.NewDecoder(r.Body)
+	var data RequestData
+	err := body.Decode(&data)
+
+	if err != nil {
+		ResponseWriter(w, true, "Invalid request: "+err.Error())
+		return
+	}
 }
 
 func main() {
 	router := http.NewServeMux()
-	router.HandleFunc("/", handler)
+	router.HandleFunc("/", Analyzer)
 
 	log.Fatal(http.ListenAndServe("0.0.0.0:8000", router))
 }
