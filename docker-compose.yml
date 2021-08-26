@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+  nginx:
+    image: nginx
+    container_name: analytics_nginx
+    restart: always
+    ports:
+      - 80:80
+    depends_on:
+      - web
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+
+  db:
+    container_name: analytics_db
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - /usr/projects/psql/analytics_db:/var/lib/psql/data
+    environment:
+      - POSTGRES_PASSWORD
+      - POSTGRES_USER
+      - POSTGRES_DB
+
+  web:
+    build: .
+    container_name: analytics_web
+    image: analytics_image
+    command: bash -c "go build -o web src/main.go && ./web"
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/usr/projects/analytics
