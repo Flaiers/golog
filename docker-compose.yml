@@ -25,6 +25,14 @@ services:
       - POSTGRES_USER
       - POSTGRES_DB
 
+  redis:
+    container_name: analytics_redis
+    image: redis
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    restart: always
+    ports:
+      - 6379:6379
+
   web:
     build: .
     container_name: analytics_web
@@ -33,6 +41,7 @@ services:
     restart: always
     depends_on:
       - db
+      - redis
     ports:
       - 8000:8000
     volumes:
