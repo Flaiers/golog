@@ -32,15 +32,22 @@ type JSONResponse struct {
 	Data  string `json:"data"`
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+func ResponseWriter(w http.ResponseWriter, error bool, data string) {
+	if error {
+		w.WriteHeader(http.StatusBadRequest)
+	}
 
 	response, _ := json.Marshal(&JSONResponse{
-		Error: false,
-		Data:  "OK",
+		Error: error,
+		Data:  data,
 	})
 	w.Write(response)
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+	ResponseWriter(w, false, "OK")
 }
 
 func main() {
