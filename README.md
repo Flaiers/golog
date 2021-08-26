@@ -1,1 +1,2 @@
-go-analytics
+Web server for analytics
+------------------------
