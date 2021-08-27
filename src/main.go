@@ -56,5 +56,5 @@ func main() {
 	router := http.NewServeMux()
 	router.HandleFunc("/", Analyzer)
 
-	log.Fatal(http.ListenAndServe("0.0.0.0:8000", router))
+	log.Fatal(http.ListenAndServe("0.0.0.0:8080", router))
 }

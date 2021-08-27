@@ -10,6 +10,7 @@ services:
     depends_on:
       - web
     volumes:
+      - ./static/favicon.ico:/usr/projects/go-analytics/static/favicon.ico
       - ./nginx:/etc/nginx/conf.d
 
   db:
