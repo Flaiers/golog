@@ -7,10 +7,12 @@ services:
     restart: always
     ports:
       - 80:80
+      - 443:443
     depends_on:
       - web
     volumes:
       - ./static/favicon.ico:/usr/projects/go-analytics/static/favicon.ico
+      - ./nginx/letsencrypt:/etc/letsencrypt
       - ./nginx:/etc/nginx/conf.d
 
   db:
@@ -46,4 +48,4 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - .:/usr/projects/analytics
+      - .:/usr/projects/go-analytics
