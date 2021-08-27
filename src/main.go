@@ -50,6 +50,8 @@ func Analyzer(w http.ResponseWriter, r *http.Request) {
 		ResponseWriter(w, true, "Invalid request: "+err.Error())
 		return
 	}
+
+	ResponseWriter(w, false, "OK")
 }
 
 func main() {
