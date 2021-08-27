@@ -11,17 +11,10 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func init() {
-	err := godotenv.Load()
-
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-}
+var _ = godotenv.Load()
 
 var ctx = context.Background()
-
-var rdb = redis.NewClient(&redis.Options{
+var client = redis.NewClient(&redis.Options{
 	Addr:     "localhost:6379",
 	Password: os.Getenv("REDIS_PASSWORD"),
 	DB:       0,
@@ -51,7 +44,11 @@ func Analyzer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ResponseWriter(w, false, "OK")
+	key := data.Date
+	value, _ := json.Marshal(data)
+	DataWriter(key, string(value))
+
+	ResponseWriter(w, false, "ok")
 }
 
 func main() {
@@ -59,4 +56,12 @@ func main() {
 	router.HandleFunc("/", Analyzer)
 
 	log.Fatal(http.ListenAndServe("0.0.0.0:8080", router))
+}
+
+func DataWriter(key string, value string) {
+	err := client.Set(key, value, 0).Err()
+
+	if err != nil {
+		log.Print(err)
+	}
 }
