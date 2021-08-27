@@ -50,11 +50,13 @@ func Analyzer(w http.ResponseWriter, r *http.Request) {
 		ResponseWriter(w, true, "Invalid request: "+err.Error())
 		return
 	}
+
+	ResponseWriter(w, false, "OK")
 }
 
 func main() {
 	router := http.NewServeMux()
 	router.HandleFunc("/", Analyzer)
 
-	log.Fatal(http.ListenAndServe("0.0.0.0:8000", router))
+	log.Fatal(http.ListenAndServe("0.0.0.0:8080", router))
 }

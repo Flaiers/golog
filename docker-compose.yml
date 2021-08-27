@@ -7,9 +7,12 @@ services:
     restart: always
     ports:
       - 80:80
+      - 443:443
     depends_on:
       - web
     volumes:
+      - ./static/favicon.ico:/usr/projects/go-analytics/static/favicon.ico
+      - ./nginx/letsencrypt:/etc/letsencrypt
       - ./nginx:/etc/nginx/conf.d
 
   db:
@@ -37,12 +40,12 @@ services:
     build: .
     container_name: analytics_web
     image: analytics_image
-    command: bash -c "go build -o web src/main.go && ./web"
+    command: bash -c "go build -o web src/main.go src/structures.go && ./web"
     restart: always
     depends_on:
       - db
       - redis
     ports:
-      - 8000:8000
+      - 8080:8080
     volumes:
-      - .:/usr/projects/analytics
+      - .:/usr/projects/go-analytics

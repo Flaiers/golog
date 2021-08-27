@@ -7,7 +7,14 @@ import os
 
 load_dotenv()
 
-request = requests.get('http://0.0.0.0')
+data = {
+    'url': 'https://google.com/',
+    'method': 'GET',
+    'status': 200,
+    'user': 'bigin.maks@gmail.com'
+}
+
+request = requests.post('https://analytics.fla.codes/', json=data)
 json = request.json()
 print(json)  # {'error': False, 'data': 'OK'}
 
