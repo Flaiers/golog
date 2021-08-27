@@ -44,7 +44,7 @@ func Analyzer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	key := "data"
+	key := data.Date
 	value, _ := json.Marshal(data)
 	DataWriter(key, string(value))
 
