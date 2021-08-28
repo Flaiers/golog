@@ -1,4 +1,4 @@
-module go-analytics
+module go-logging
 
 go 1.17
 

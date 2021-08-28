@@ -32,7 +32,7 @@ func ResponseWriter(w http.ResponseWriter, error bool, data string) {
 	w.Write(response)
 }
 
-func Analyzer(w http.ResponseWriter, r *http.Request) {
+func Logger(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	body := json.NewDecoder(r.Body)
@@ -44,24 +44,31 @@ func Analyzer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if data.Status == 200 {
+		ResponseWriter(w, false, "ok")
+		return
+	}
+
 	key := data.Date
 	value, _ := json.Marshal(data)
-	DataWriter(key, string(value))
+	record := RedisWriter(key, string(value))
+
+	if record != nil {
+		ResponseWriter(w, true, "Failed write to redis: "+record.Error())
+		return
+	}
 
 	ResponseWriter(w, false, "ok")
 }
 
 func main() {
 	router := http.NewServeMux()
-	router.HandleFunc("/", Analyzer)
+	router.HandleFunc("/", Logger)
 
 	log.Fatal(http.ListenAndServe("0.0.0.0:8080", router))
 }
 
-func DataWriter(key string, value string) {
+func RedisWriter(key string, value string) error {
 	err := client.Set(key, value, 0).Err()
-
-	if err != nil {
-		log.Print(err)
-	}
+	return err
 }

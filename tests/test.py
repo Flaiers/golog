@@ -19,7 +19,7 @@ data = {
     'comment': '',
 }
 
-request = requests.post('https://analytics.fla.codes/', json=data)
+request = requests.post('https://logging.fla.codes/', json=data)
 json = request.json()
 print(json)  # {'error': False, 'data': 'ok'}
 
