@@ -1,2 +1,2 @@
-Web server for analytics
-------------------------
+Web server for logging
+----------------------
