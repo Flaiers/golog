@@ -51,12 +51,7 @@ func Logger(w http.ResponseWriter, r *http.Request) {
 
 	key := data.Date
 	value, _ := json.Marshal(data)
-	record := RedisWriter(key, string(value))
-
-	if record != nil {
-		ResponseWriter(w, true, "Failed write to redis: "+record.Error())
-		return
-	}
+	go RedisWriter(key, string(value))
 
 	ResponseWriter(w, false, "ok")
 }
@@ -68,7 +63,10 @@ func main() {
 	log.Fatal(http.ListenAndServe("0.0.0.0:8080", router))
 }
 
-func RedisWriter(key string, value string) error {
+func RedisWriter(key string, value string) {
 	err := client.Set(key, value, 0).Err()
-	return err
+
+	if err != nil {
+		log.Fatal("Failed write to redis: " + err.Error())
+	}
 }
