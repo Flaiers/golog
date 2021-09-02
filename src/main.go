@@ -2,10 +2,14 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+
+	_ "github.com/lib/pq"
 
 	"github.com/go-redis/redis"
 	"github.com/joho/godotenv"
@@ -69,4 +73,22 @@ func RedisWriter(key string, value string) {
 	if err != nil {
 		log.Fatal("Failed write to redis: " + err.Error())
 	}
+}
+
+func DatabaseClient() {
+	psql := fmt.Sprintf("host=localhost port=5432 user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"), os.Getenv("POSTGRES_DB"))
+
+	db, err := sql.Open("postgres", psql)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer db.Close()
+
+	err = db.Ping()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
 }
