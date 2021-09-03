@@ -1,24 +1,18 @@
 package main
 
 import (
-	"context"
+	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
 	"os"
 
-	"github.com/go-redis/redis"
+	_ "github.com/lib/pq"
+
 	"github.com/joho/godotenv"
 )
 
 var _ = godotenv.Load()
-
-var ctx = context.Background()
-var client = redis.NewClient(&redis.Options{
-	Addr:     "localhost:6379",
-	Password: os.Getenv("REDIS_PASSWORD"),
-	DB:       0,
-})
 
 func ResponseWriter(w http.ResponseWriter, error bool, data string) {
 	if error {
@@ -49,16 +43,9 @@ func Logger(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	key := data.Date
-	value, _ := json.Marshal(data)
-	record := RedisWriter(key, string(value))
+	values, _ := json.Marshal(data)
 
-	if record != nil {
-		ResponseWriter(w, true, "Failed write to redis: "+record.Error())
-		return
-	}
-
-	ResponseWriter(w, false, "ok")
+	ResponseWriter(w, false, string(values))
 }
 
 func main() {
@@ -68,7 +55,11 @@ func main() {
 	log.Fatal(http.ListenAndServe("0.0.0.0:8080", router))
 }
 
-func RedisWriter(key string, value string) error {
-	err := client.Set(key, value, 0).Err()
-	return err
+func DatabaseClient() {
+	db, err := sql.Open("postgres", os.Getenv("DB_DSN"))
+
+	if err != nil {
+		log.Fatal("Failed to open a DB connection: ", err)
+	}
+	defer db.Close()
 }
