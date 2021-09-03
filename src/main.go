@@ -1,10 +1,8 @@
 package main
 
 import (
-	"context"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -17,7 +15,6 @@ import (
 
 var _ = godotenv.Load()
 
-var ctx = context.Background()
 var client = redis.NewClient(&redis.Options{
 	Addr:     "localhost:6379",
 	Password: os.Getenv("REDIS_PASSWORD"),
@@ -76,19 +73,10 @@ func RedisWriter(key string, value string) {
 }
 
 func DatabaseClient() {
-	psql := fmt.Sprintf("host=localhost port=5432 user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"), os.Getenv("POSTGRES_DB"))
+	db, err := sql.Open("postgres", os.Getenv("DB_DSN"))
 
-	db, err := sql.Open("postgres", psql)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal("Failed to open a DB connection: ", err)
 	}
 	defer db.Close()
-
-	err = db.Ping()
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
 }
