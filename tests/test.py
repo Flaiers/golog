@@ -13,7 +13,7 @@ data = {
     'url': 'https://google.com/',
     'method': 'GET',
     'status': 200,
-    'user': 'bigin.maks@gmail.com',
+    'user_id': 2,
     'headers': '',
     'body': '',
     'comment': '',
