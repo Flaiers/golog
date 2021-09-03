@@ -9,17 +9,10 @@ import (
 
 	_ "github.com/lib/pq"
 
-	"github.com/go-redis/redis"
 	"github.com/joho/godotenv"
 )
 
 var _ = godotenv.Load()
-
-var client = redis.NewClient(&redis.Options{
-	Addr:     "localhost:6379",
-	Password: os.Getenv("REDIS_PASSWORD"),
-	DB:       0,
-})
 
 func ResponseWriter(w http.ResponseWriter, error bool, data string) {
 	if error {
@@ -50,11 +43,9 @@ func Logger(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	key := data.Date
-	value, _ := json.Marshal(data)
-	go RedisWriter(key, string(value))
+	values, _ := json.Marshal(data)
 
-	ResponseWriter(w, false, "ok")
+	ResponseWriter(w, false, string(values))
 }
 
 func main() {
@@ -62,14 +53,6 @@ func main() {
 	router.HandleFunc("/", Logger)
 
 	log.Fatal(http.ListenAndServe("0.0.0.0:8080", router))
-}
-
-func RedisWriter(key string, value string) {
-	err := client.Set(key, value, 0).Err()
-
-	if err != nil {
-		log.Fatal("Failed write to redis: " + err.Error())
-	}
 }
 
 func DatabaseClient() {
