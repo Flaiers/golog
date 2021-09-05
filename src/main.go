@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -46,9 +45,15 @@ func Logger(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id := DatabaseWriter(data)
+	err = DatabaseWriter(data)
 
-	ResponseWriter(w, false, fmt.Sprint(id))
+	if err != nil {
+		ResponseWriter(w, true, "Failed write to db: "+err.Error())
+		return
+	}
+	// defer db.Close()
+
+	ResponseWriter(w, false, "ok")
 }
 
 func main() {
@@ -75,7 +80,7 @@ func DatabaseClient() *sql.DB {
 	return db
 }
 
-func DatabaseWriter(data RequestData) int {
+func DatabaseWriter(data RequestData) error {
 	// db := DatabaseClient()
 
 	var id int
@@ -88,10 +93,5 @@ func DatabaseWriter(data RequestData) int {
 	err := db.QueryRow(query, data.Date, data.Url, data.Method, data.Status,
 		data.UserID, data.Headers, data.Body, data.Comment).Scan(&id)
 
-	if err != nil {
-		log.Fatal(err)
-	}
-	// defer db.Close()
-
-	return id
+	return err
 }
