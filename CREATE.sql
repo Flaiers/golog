@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS logging (
     id serial PRIMARY KEY,
-    date DATE UNIQUE NOT NULL,
+    date TIMESTAMP UNIQUE NOT NULL,
     url VARCHAR (255) NOT NULL,
     method VARCHAR (4) NOT NULL,
     status INT NOT NULL,
