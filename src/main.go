@@ -45,13 +45,7 @@ func Logger(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = DatabaseWriter(data)
-
-	if err != nil {
-		ResponseWriter(w, true, "Failed write to db: "+err.Error())
-		return
-	}
-	// defer db.Close()
+	go DatabaseWriter(data)
 
 	ResponseWriter(w, false, "ok")
 }
@@ -60,12 +54,12 @@ func main() {
 	router := http.NewServeMux()
 	router.HandleFunc("/", Logger)
 
-	// db := DatabaseClient()
-
 	err := db.Ping()
+
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer db.Close()
 
 	log.Fatal(http.ListenAndServe("0.0.0.0:8080", router))
 }
@@ -80,9 +74,7 @@ func DatabaseClient() *sql.DB {
 	return db
 }
 
-func DatabaseWriter(data RequestData) error {
-	// db := DatabaseClient()
-
+func DatabaseWriter(data RequestData) {
 	var id int
 	query := `
 	INSERT INTO logging (date, url, method, status, user_id, headers, body, comment)
@@ -93,5 +85,7 @@ func DatabaseWriter(data RequestData) error {
 	err := db.QueryRow(query, data.Date, data.Url, data.Method, data.Status,
 		data.UserID, data.Headers, data.Body, data.Comment).Scan(&id)
 
-	return err
+	if err != nil {
+		log.Print(err)
+	}
 }
