@@ -43,9 +43,9 @@ func Logger(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	values, _ := json.Marshal(data)
+	DatabaseClient(data)
 
-	ResponseWriter(w, false, string(values))
+	ResponseWriter(w, false, "ok")
 }
 
 func main() {
@@ -55,11 +55,18 @@ func main() {
 	log.Fatal(http.ListenAndServe("0.0.0.0:8080", router))
 }
 
-func DatabaseClient() {
+func DatabaseClient(data RequestData) {
 	db, err := sql.Open("postgres", os.Getenv("DB_DSN"))
 
 	if err != nil {
-		log.Fatal("Failed to open a DB connection: ", err)
+		log.Fatal(err)
 	}
 	defer db.Close()
+
+	err = db.Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Print("OK")
 }
