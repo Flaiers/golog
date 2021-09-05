@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -46,21 +45,21 @@ func Logger(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id := DatabaseWriter(data)
+	go DatabaseWriter(data)
 
-	ResponseWriter(w, false, fmt.Sprint(id))
+	ResponseWriter(w, false, "ok")
 }
 
 func main() {
 	router := http.NewServeMux()
 	router.HandleFunc("/", Logger)
 
-	// db := DatabaseClient()
-
 	err := db.Ping()
+
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer db.Close()
 
 	log.Fatal(http.ListenAndServe("0.0.0.0:8080", router))
 }
@@ -75,9 +74,7 @@ func DatabaseClient() *sql.DB {
 	return db
 }
 
-func DatabaseWriter(data RequestData) int {
-	// db := DatabaseClient()
-
+func DatabaseWriter(data RequestData) {
 	var id int
 	query := `
 	INSERT INTO logging (date, url, method, status, user_id, headers, body, comment)
@@ -89,9 +86,6 @@ func DatabaseWriter(data RequestData) int {
 		data.UserID, data.Headers, data.Body, data.Comment).Scan(&id)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
-	// defer db.Close()
-
-	return id
 }
