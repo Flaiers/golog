@@ -9,6 +9,7 @@ import (
 
 	_ "github.com/lib/pq"
 
+	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
 
@@ -33,9 +34,8 @@ func Logger(w http.ResponseWriter, r *http.Request) {
 
 	body := json.NewDecoder(r.Body)
 	var data RequestData
-	err := body.Decode(&data)
 
-	if err != nil {
+	if err := body.Decode(&data); err != nil {
 		ResponseWriter(w, true, "Invalid request: "+err.Error())
 		return
 	}
@@ -51,12 +51,10 @@ func Logger(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	router := http.NewServeMux()
-	router.HandleFunc("/", Logger)
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/", Logger).Methods("POST")
 
-	err := db.Ping()
-
-	if err != nil {
+	if err := db.Ping(); err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
@@ -75,17 +73,14 @@ func DatabaseClient() *sql.DB {
 }
 
 func DatabaseWriter(data RequestData) {
-	var id int
 	query := `
 	INSERT INTO logging (date, url, method, status, user_id, headers, body, comment)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	RETURNING id;
 	`
 
-	err := db.QueryRow(query, data.Date, data.Url, data.Method, data.Status,
-		data.UserID, data.Headers, data.Body, data.Comment).Scan(&id)
-
-	if err != nil {
+	if err := db.QueryRow(query, data.Date, data.Url, data.Method, data.Status,
+		data.UserID, data.Headers, data.Body, data.Comment); err != nil {
 		log.Print(err)
 	}
 }
