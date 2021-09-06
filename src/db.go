@@ -2,10 +2,11 @@ package main
 
 import (
 	"database/sql"
-	"log"
+	"fmt"
 	"os"
 
 	"go-logging/src/config"
+	"go-logging/src/log"
 
 	_ "github.com/lib/pq"
 
@@ -20,7 +21,7 @@ func DatabaseClient() *sql.DB {
 	db, err := sql.Open("postgres", os.Getenv("DB_DSN"))
 
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 	}
 
 	return db
@@ -36,8 +37,8 @@ func DatabaseWriter(data config.RequestData) {
 
 	if err := db.QueryRow(query, data.Date, data.Url, data.Method, data.Status,
 		data.UserID, data.Body, data.Comment).Scan(&id); err != nil {
-		log.Print(err)
+		log.Info(err)
 	}
 
-	log.Print(id)
+	fmt.Println(id)
 }

@@ -2,12 +2,10 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"go-logging/src/config"
-
-	_ "github.com/lib/pq"
+	"go-logging/src/log"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
@@ -39,7 +37,7 @@ func Logger(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if data.Status == 200 {
-		ResponseWriter(w, false, "ok")
+		ResponseWriter(w, false, "Did nothing")
 		return
 	}
 
@@ -53,9 +51,9 @@ func main() {
 	router.HandleFunc("/", Logger).Methods("POST")
 
 	if err := db.Ping(); err != nil {
-		log.Fatal(err)
+		log.Error(err)
 	}
 	defer db.Close()
 
-	log.Fatal(http.ListenAndServe("0.0.0.0:8080", router))
+	log.Error(http.ListenAndServe("0.0.0.0:8080", router))
 }
