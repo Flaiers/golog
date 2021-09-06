@@ -2,10 +2,10 @@ package main
 
 import (
 	"database/sql"
-	"log"
 	"os"
 
 	"go-logging/src/config"
+	"go-logging/src/log"
 
 	_ "github.com/lib/pq"
 
@@ -20,24 +20,35 @@ func DatabaseClient() *sql.DB {
 	db, err := sql.Open("postgres", os.Getenv("DB_DSN"))
 
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 	}
 
 	return db
 }
 
 func DatabaseWriter(data config.RequestData) {
-	var id int
 	query := `
 	INSERT INTO logging (date, url, method, status, user_id, body, comment)
-	VALUES ($1, $2, $3, $4, $5, NULLIF($6, ''), NULLIF($7, ''))
-	RETURNING id;
+	VALUES ($1, $2, $3, $4, $5, NULLIF($6, ''), NULLIF($7, ''));
 	`
 
-	if err := db.QueryRow(query, data.Date, data.Url, data.Method, data.Status,
-		data.UserID, data.Body, data.Comment).Scan(&id); err != nil {
-		log.Print(err)
+	if _, err := db.Query(query, data.Date, data.Url, data.Method, data.Status,
+		data.UserID, data.Body, data.Comment); err != nil {
+		log.Info(err)
 	}
 
-	log.Print(id)
+}
+
+func DatabaseCounter() int {
+	var id int
+	query := `
+	SELECT COUNT(*)
+	FROM logging;
+	`
+
+	if err := db.QueryRow(query).Scan(&id); err != nil {
+		log.Info(err)
+	}
+
+	return id
 }
