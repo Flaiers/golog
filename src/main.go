@@ -8,10 +8,7 @@ import (
 	"go-logging/src/log"
 
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 )
-
-var _ = godotenv.Load()
 
 func ResponseWriter(w http.ResponseWriter, error bool, data string) {
 	if error {
@@ -46,8 +43,13 @@ func Logger(w http.ResponseWriter, r *http.Request) {
 	ResponseWriter(w, false, "ok")
 }
 
+func Counter(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+}
+
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/", Counter).Methods("GET")
 	router.HandleFunc("/", Logger).Methods("POST")
 
 	if err := db.Ping(); err != nil {

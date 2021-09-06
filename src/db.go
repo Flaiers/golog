@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"os"
 
 	"go-logging/src/config"
@@ -28,17 +27,14 @@ func DatabaseClient() *sql.DB {
 }
 
 func DatabaseWriter(data config.RequestData) {
-	var id int
 	query := `
 	INSERT INTO logging (date, url, method, status, user_id, body, comment)
-	VALUES ($1, $2, $3, $4, $5, NULLIF($6, ''), NULLIF($7, ''))
-	RETURNING id;
+	VALUES ($1, $2, $3, $4, $5, NULLIF($6, ''), NULLIF($7, ''));
 	`
 
-	if err := db.QueryRow(query, data.Date, data.Url, data.Method, data.Status,
-		data.UserID, data.Body, data.Comment).Scan(&id); err != nil {
+	if _, err := db.Query(query, data.Date, data.Url, data.Method, data.Status,
+		data.UserID, data.Body, data.Comment); err != nil {
 		log.Info(err)
 	}
 
-	fmt.Println(id)
 }
