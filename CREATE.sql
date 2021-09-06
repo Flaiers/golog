@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS logging (
     method VARCHAR (4) NOT NULL,
     status INT NOT NULL,
     user_id serial,
-    headers VARCHAR (255),
     body VARCHAR (255),
     comment VARCHAR (255)
 );

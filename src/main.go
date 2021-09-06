@@ -74,13 +74,12 @@ func DatabaseClient() *sql.DB {
 
 func DatabaseWriter(data RequestData) {
 	query := `
-	INSERT INTO logging (date, url, method, status, user_id, headers, body, comment)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-	RETURNING id;
+	INSERT INTO logging (date, url, method, status, user_id, body, comment)
+	VALUES ($1, $2, $3, $4, $5, $6, $7);
 	`
 
 	if err := db.QueryRow(query, data.Date, data.Url, data.Method, data.Status,
-		data.UserID, data.Headers, data.Body, data.Comment); err != nil {
+		data.UserID, data.Body, data.Comment); err != nil {
 		log.Print(err)
 	}
 }
