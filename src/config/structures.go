@@ -5,6 +5,11 @@ type JSONResponse struct {
 	Data  string `json:"data"`
 }
 
+type JSONResponseInt struct {
+	Error bool `json:"error"`
+	Data  int  `json:"data"`
+}
+
 type RequestData struct {
 	Date    string `json:"date"`
 	Url     string `json:"url"`

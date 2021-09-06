@@ -38,3 +38,17 @@ func DatabaseWriter(data config.RequestData) {
 	}
 
 }
+
+func DatabaseCounter() int {
+	var id int
+	query := `
+	SELECT COUNT(*)
+	FROM logging;
+	`
+
+	if err := db.QueryRow(query).Scan(&id); err != nil {
+		log.Info(err)
+	}
+
+	return id
+}
