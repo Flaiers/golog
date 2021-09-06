@@ -1,4 +1,4 @@
-package main
+package config
 
 type JSONResponse struct {
 	Error bool   `json:"error"`
@@ -11,7 +11,6 @@ type RequestData struct {
 	Method  string `json:"method"`
 	Status  int    `json:"status"`
 	UserID  int    `json:"user_id"`
-	Headers string `json:"headers"`
 	Body    string `json:"body"`
 	Comment string `json:"comment"`
 }

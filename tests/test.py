@@ -8,14 +8,13 @@ import os
 load_dotenv()
 
 data = {
-    'date': str(datetime.now()),  # 2021-08-28 00:50:11.331569
-    'url': 'https://google.com/',
+    'date': str(datetime.now()),
+    'url': 'https://fla.codes/',
     'method': 'GET',
     'status': 404,
     'user_id': 2,
-    'headers': '',
-    'body': '',
-    'comment': '',
+    'body': None,
+    'comment': 'test',
 }
 
 request = requests.post('https://logging.fla.codes/', json=data)
