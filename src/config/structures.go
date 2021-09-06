@@ -1,4 +1,4 @@
-package main
+package config
 
 type JSONResponse struct {
 	Error bool   `json:"error"`

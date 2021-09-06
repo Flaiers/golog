@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 
+	"go-logging/src/config"
+
 	_ "github.com/lib/pq"
 
 	"github.com/joho/godotenv"
@@ -24,11 +26,11 @@ func DatabaseClient() *sql.DB {
 	return db
 }
 
-func DatabaseWriter(data RequestData) {
+func DatabaseWriter(data config.RequestData) {
 	var id int
 	query := `
 	INSERT INTO logging (date, url, method, status, user_id, body, comment)
-	VALUES ($1, $2, $3, $4, $5, $6, $7)
+	VALUES ($1, $2, $3, $4, $5, NULLIF($6, ''), NULLIF($7, ''))
 	RETURNING id;
 	`
 

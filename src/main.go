@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 
+	"go-logging/src/config"
+
 	_ "github.com/lib/pq"
 
 	"github.com/gorilla/mux"
@@ -18,7 +20,7 @@ func ResponseWriter(w http.ResponseWriter, error bool, data string) {
 		w.WriteHeader(http.StatusBadRequest)
 	}
 
-	response, _ := json.Marshal(&JSONResponse{
+	response, _ := json.Marshal(config.JSONResponse{
 		Error: error,
 		Data:  data,
 	})
@@ -29,7 +31,7 @@ func Logger(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	body := json.NewDecoder(r.Body)
-	var data RequestData
+	var data config.RequestData
 
 	if err := body.Decode(&data); err != nil {
 		ResponseWriter(w, true, "Invalid request: "+err.Error())
