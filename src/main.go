@@ -22,6 +22,18 @@ func ResponseWriter(w http.ResponseWriter, error bool, data string) {
 	w.Write(response)
 }
 
+func ResponseWriterInt(w http.ResponseWriter, error bool, data int) {
+	if error {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	response, _ := json.Marshal(config.JSONResponseInt{
+		Error: error,
+		Data:  data,
+	})
+	w.Write(response)
+}
+
 func Logger(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
@@ -45,6 +57,10 @@ func Logger(w http.ResponseWriter, r *http.Request) {
 
 func Counter(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+	id := DatabaseCounter()
+
+	ResponseWriterInt(w, false, id)
 }
 
 func main() {
