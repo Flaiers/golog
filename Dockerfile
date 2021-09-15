@@ -1,4 +1,4 @@
-FROM golang:1.17
+FROM golang:latest
 
 WORKDIR /usr/projects/go-logging
 COPY . /usr/projects/go-logging/
