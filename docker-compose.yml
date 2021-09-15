@@ -32,7 +32,7 @@ services:
     build: .
     container_name: logging_web
     image: logging_image
-    command: bash -c "go build -o web src/main.go src/structures.go && ./web"
+    command: bash -c "go build -o web src/*.go && ./web"
     restart: always
     depends_on:
       - db
